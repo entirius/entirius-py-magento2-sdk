@@ -19,10 +19,12 @@ Magento 2 REST API SDK — distribution `entirius-py-magento2-sdk`, import `mage
 - Git flow: `master` (production) + `develop` (integration); changes land via PR; semver tag on `master`.
 - Never rename the import package `magento2_sdk` — it is a public API contract.
 - Default: do not commit — git is the user's call.
+- No AI attribution in commits or PR descriptions.
 
 ## Architecture
 
-`magento2_sdk/`: `Client` (REST over `requests`), `services/` (e.g. `OrderService`, invoice),
-DTOs in `dto/`. Runtime dependency: `requests`. `invoice.py` calls a custom `V1/ecomhouse/…`
-Magento module endpoint (allowlisted in the secret scanner). The integration test hits a live
-Magento and is skipped without `MAGENTO_URL` / `MAGENTO_TOKEN` env vars.
+`src/magento2_sdk/`: `client.py` holds `Client(base_url, access_token)` (Bearer token, REST over `requests`);
+`services/` holds `OrderService` (orders, delivery point, invoice, shipment) and `InvoiceService`; DTOs live in `dto/`.
+`InvoiceService.create_for_order()` posts to `V1/ecomhouse/assigne-invoice-to-order`, the endpoint of a custom Magento module, not core Magento.
+Runtime dependency: `requests`. The integration test hits a live Magento and is skipped without `MAGENTO_URL` /
+`MAGENTO_TOKEN` env vars.
